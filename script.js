@@ -1,107 +1,64 @@
-const phrases = document.querySelectorAll('.floating');
-const velocities = [];
+const phrases = [
+  "Te Amo Zayuri Nahomi 😍",
+  "Mi vida 💖",
+  "Te amo 😘",
+  "Mi corazón ❤️",
+  "Contigo soy feliz 🥰",
+  "Siempre tú 💞",
+  "Eres mi felicidad diaria 💘",
+  "Mi alma gemela 🤗",
+  "Gracias por existir 😍",
+  "Contigo todo es mejor 🥰",
+  "Nuestro destino está escrito 📝",
+  "Eres mi sol ☀️",
+  "Besitos 😘",
+  "💍 ¿Para siempre?"
+];
 
-// Inicializa posiciones y velocidades
-phrases.forEach(p => {
-  const vx = (Math.random() - 0.5) * 2;
-  const vy = (Math.random() - 0.5) * 2;
-  velocities.push({ x: vx, y: vy });
+const typewriterText = "I love you 💘";
 
-  p.style.left = Math.random() * (window.innerWidth - 200) + 'px';
-  p.style.top = Math.random() * (window.innerHeight - 50) + 'px';
-});
+function typeEffectLoop(text, elementId, typingSpeed = 100, deletingSpeed = 50, pauseTime = 2000) {
+  const el = document.getElementById(elementId);
+  let i = 0;
+  let isDeleting = false;
 
-const centralText = document.querySelector('.central-text');
-
-function getRect(el) {
-  const rect = el.getBoundingClientRect();
-  return {
-    left: rect.left,
-    top: rect.top,
-    right: rect.left + rect.width,
-    bottom: rect.top + rect.height,
-    width: rect.width,
-    height: rect.height
-  };
-}
-
-function updatePositions() {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-
-  const centralRect = getRect(centralText);
-
-  for (let i = 0; i < phrases.length; i++) {
-    const p = phrases[i];
-    const vel = velocities[i];
-
-    let x = parseFloat(p.style.left);
-    let y = parseFloat(p.style.top);
-    const w = p.offsetWidth;
-    const h = p.offsetHeight;
-
-    x += vel.x * 2;
-    y += vel.y * 2;
-
-    // Rebote con bordes de la pantalla
-    if (x <= 0 || x + w >= width) vel.x *= -1;
-    if (y <= 0 || y + h >= height) vel.y *= -1;
-
-    // Rebote con otras frases
-    for (let j = 0; j < phrases.length; j++) {
-      if (i === j) continue;
-      const other = phrases[j];
-      const ox = parseFloat(other.style.left);
-      const oy = parseFloat(other.style.top);
-      const ow = other.offsetWidth;
-      const oh = other.offsetHeight;
-
-      if (
-        x < ox + ow &&
-        x + w > ox &&
-        y < oy + oh &&
-        y + h > oy
-      ) {
-        vel.x *= -1;
-        vel.y *= -1;
-      }
+  function type() {
+    if (isDeleting) {
+      el.textContent = text.substring(0, i--);
+    } else {
+      el.textContent = text.substring(0, i++);
     }
 
-    // Rebote con frase central
-    if (
-      x < centralRect.right &&
-      x + w > centralRect.left &&
-      y < centralRect.bottom &&
-      y + h > centralRect.top
-    ) {
-      vel.x *= -1;
-      vel.y *= -1;
+    if (!isDeleting && i === text.length + 1) {
+      setTimeout(() => isDeleting = true, pauseTime);
+    } else if (isDeleting && i === 0) {
+      isDeleting = false;
     }
 
-    p.style.left = `${x}px`;
-    p.style.top = `${y}px`;
+    const delay = isDeleting ? deletingSpeed : typingSpeed;
+    setTimeout(type, delay);
   }
 
-  requestAnimationFrame(updatePositions);
+  type();
 }
-updatePositions();
 
-// Corazones animados
-function createHeart() {
-  const heart = document.createElement('div');
-  heart.classList.add('heart');
-  heart.textContent = '💗';
+function showMessage() {
+  const container = document.getElementById("messages-container");
+  const msg = document.createElement("div");
+  msg.className = "message";
+  msg.textContent = phrases[Math.floor(Math.random() * phrases.length)];
 
-  const x = Math.random() * window.innerWidth;
-  const y = window.innerHeight;
+  const offsetX = (Math.random() - 0.5) * 200;
+  const offsetY = (Math.random() - 0.5) * 100;
 
-  heart.style.left = `${x}px`;
-  heart.style.top = `${y}px`;
+  msg.style.left = `${offsetX}px`;
+  msg.style.top = `${offsetY}px`;
 
-  document.getElementById('heart-container').appendChild(heart);
-
-  setTimeout(() => {
-    heart.remove();
-  }, 2500);
+  container.appendChild(msg);
+  setTimeout(() => container.removeChild(msg), 3000);
 }
-setInterval(createHeart, 150);
+
+window.onload = () => {
+  typeEffectLoop(typewriterText, "typewriter-text");
+  setInterval(showMessage, 2000);
+};
