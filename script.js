@@ -48,11 +48,11 @@ function showMessage() {
   msg.className = "message";
   msg.textContent = phrases[Math.floor(Math.random() * phrases.length)];
 
-  const offsetX = (Math.random() - 0.5) * 200;
-  const offsetY = (Math.random() - 0.5) * 100;
+  const side = Math.random() > 0.5 ? 'left' : 'right';
+  const offsetY = Math.random() * 80 - 40;
 
-  msg.style.left = `${offsetX}px`;
-  msg.style.top = `${offsetY}px`;
+  msg.style[side] = `${Math.random() * 40 + 10}%`;
+  msg.style.top = `calc(50% + ${offsetY}px)`;
 
   container.appendChild(msg);
   setTimeout(() => container.removeChild(msg), 3000);
